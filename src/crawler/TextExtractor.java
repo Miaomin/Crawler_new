@@ -19,6 +19,8 @@ public class TextExtractor {
 		File[] allFiles = inputFolder.listFiles();
 		File outFolder = new File(args[1]);
 		outFolder.mkdirs();
+		String listName = args[2];
+		PrintWriter listWriter = new PrintWriter(new FileWriter(listName));
 		for (File f:allFiles){
 			//String inputFile = folder+File.separator+f;
 			//BufferedReader inputReader = new BufferedReader(new FileReader(inputFile));
@@ -29,6 +31,7 @@ public class TextExtractor {
 				String title = doc.getElementsByTag("title").text().split("  |  ")[0];
 				String[] fileNames = f.toString().split(File.separator);
 				String fileName = fileNames[fileNames.length-1];
+				listWriter.printf("%s\t%s\n", fileName, title);
 				PrintWriter textWriter = new PrintWriter(new FileWriter(outFolder+File.separator+fileName));
 				textWriter.println(title);				
 				//System.out.println(title);
@@ -37,11 +40,9 @@ public class TextExtractor {
 					//System.out.println(para.get(i).text());
 				}
 				textWriter.close();
-			}
-			
-			
+			}	
 		}
-		
+		listWriter.close();	
 	}
 
 }
