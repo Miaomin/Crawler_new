@@ -6,11 +6,7 @@ import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,12 +25,23 @@ public class Crawler {
 	}
 	
 	public static void main(String[] args) throws IOException{
-		WebDriver driver = new ChromeDriver();
+
+		if (args.length != 4) {
+			System.err.println(Crawler.class.getName() +
+					" channel outputDir numPages sourcesFile");
+		}
+
 		String channel = args[0];
 		File dir = new File(args[1]);
-		dir.mkdirs();
 		int pages = Integer.valueOf(args[2]);
+		String sourcesFile = args[3];
+
+		WebDriver driver = new ChromeDriver();
+
+		dir.mkdirs();
+
 		DateFormat dateFormat = new SimpleDateFormat("yyMMddHHmmss");
+		PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(sourcesFile)));
 		int file = 1;
 		int page = 1;
 		String url = "http://techcrunch.com/" + channel + "/";
@@ -59,11 +66,16 @@ public class Crawler {
 						output));
 				writer.write(source);
 				writer.close();
+				pw.println(dir + File.separator
+						+ dateFormat.format(date) + "_" + page + "_" + file + "\t"
+				        + link);
+				pw.flush();
 				sleep();
 				file++;
 			}
 			page++;
 		}
+		pw.close();
 		driver.quit();
 	}
 
